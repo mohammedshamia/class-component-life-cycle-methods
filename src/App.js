@@ -1,31 +1,58 @@
-import React from "react";
+import {useCallback, useState} from "react";
 import './App.css';
-import Counter from "./Components/Counter";
-import StatelessComponent from "./Components/StatelessComponent";
+import IncrementButton from "./Components/Functional/IncrementButton";
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state={
-      counter:0
-    }
+
+function App(props) {
+  const [counter, setCounter]=useState(0)
+  const handleIncrement=useCallback(()=>setCounter(prevState=>prevState+1), [])
+
+  // 1
+/** Works like componentDidMount
+  useEffect(()=>{
+
+  },[])*/
+
+
+// 2
+/** Works like componentWillUnmount
+useEffect(()=>{
+
+  return ()=>{
+    // clean up
   }
+}, [])
+*/
 
-  handleButtonClick=()=>this.setState(prevState=>{
-    console.log(prevState.counter)
-    return {...prevState, counter:prevState.counter+1}
-  })
+// 3
+/**  useEffect(() => {
+    //Runs on every render
+  });*/
 
-  render() {
-    return (
-        <div className="App">
-          {this.state.counter < 5 &&
-            <Counter handleButtonClick={this.handleButtonClick} counter={this.state.counter}/>
-          }
-          <StatelessComponent/>
-        </div>
-    );
-  }
+// 4
+/**
+ * useEffect(() => {
+  //Runs on the first render
+  //And any time any dependency value changes
+}, [prop, state]);
+ */
+
+
+/** It will make an infinite re-rendering
+ useEffect(()=>{
+  fetch('https://jsonplaceholder.typicode.com/todos/1')
+      .then(response => response.json())
+      .then(json => setState(json))
+}, [state])
+ */
+
+
+  return (
+      <div className="App">
+        <div>counter: {counter}</div>
+        <IncrementButton handleIncrement={handleIncrement}/>
+      </div>
+  );
 }
 
 export default App;
